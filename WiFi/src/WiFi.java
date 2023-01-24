@@ -1,10 +1,14 @@
 import java.util.Arrays;
 
 class WiFi {
+    public static double roundToHalf(double d) {
+        return Math.round(d * 2) / 2.0;
+    }
     public static double computeDistance(int[] houses, int numOfAccessPoints) {
         if (houses.length == 0) {
             return 0;
         }
+        Arrays.sort(houses);
         double max = houses[houses.length - 1] - houses[0];
         double min = 0;
         double mid = (max + min) / 2.0;
@@ -17,7 +21,7 @@ class WiFi {
                 mid = (max + min) / 2.0;
             }
         }
-        return mid;
+        return roundToHalf(mid);
     }
 
     public static boolean coverable(int[] houses, int numOfAccessPoints, double distance) {
@@ -32,7 +36,7 @@ class WiFi {
         int[] arr = houses;
         double full = distance * 2.0;
         int num = numOfAccessPoints;
-        Arrays.sort(arr);
+//        Arrays.sort(arr);
         int diff = 0;
         for (int index = arr.length - 1; index > 0; index--) {
             if (num < 1) {
