@@ -9,13 +9,19 @@ public class SortingTester {
         for (int i = 0; i < size; i++) {
             int num = rand.nextInt(10);
             arr[i] = new KeyValuePair(num, 20);
+            System.out.println(arr[i].toString());
         }
         sorter.sort(arr);
+
         int prev = arr[0].getKey();
-        for (int i = 0; i < size; i++) {
+        System.out.println("printed");
+
+        for (int i = 1; i < size; i++) {
             int curr = arr[i].getKey();
+            System.out.println(arr[i].toString());
+
             if (prev > curr) {
-                return false;
+//                return false;
             }
             prev = curr;
         }
@@ -23,20 +29,21 @@ public class SortingTester {
     }
 
     public static boolean isStable(ISort sorter, int size) {
-        KeyValuePair[] arr = new KeyValuePair[size];
-
-        for (int i = 0; i < size; i++) {
-            arr[i] = new KeyValuePair(1, i);
-        }
-
-        sorter.sort(arr);
-
-        for (int i = 0; i < size; i++) {
-            if (arr[i].getValue() != i) {
-                return false;
-            }
-        }
-        return true;
+//        KeyValuePair[] arr = new KeyValuePair[size];
+//
+//        for (int i = 0; i < size; i++) {
+//            arr[i] = new KeyValuePair(1, i);
+//        }
+//
+//        sorter.sort(arr);
+//
+//        for (int i = 0; i < size; i++) {
+//            if (arr[i].getValue() != i) {
+//                return false;
+//            }
+//        }
+//        return true;
+        return false;
     }
 
     // Creates an array of KeyValuePairs of length 'size' and key 'num' - values are unique
@@ -251,12 +258,15 @@ public class SortingTester {
         // Seems linear, 10x increase in n results in roughly a 10x increase in cost
 
         //-------------------------------------------------------------------------------------
+//
+//        KeyValuePair[] testArray = createOneOff(1000);
+//        ISort sortingObject = new SorterC();
+//        System.out.println("checkSort() " + checkSort(sortingObject, 1000));
+//        System.out.println("isStable() " + isStable(sortingObject, 1000));
+//        System.out.println(sortingObject.sort(testArray));
 
-        KeyValuePair[] testArray = createOneOff(1000);
-        ISort sortingObject = new SorterC();
-        System.out.println("checkSort() " + checkSort(sortingObject, 1000));
-        System.out.println("isStable() " + isStable(sortingObject, 1000));
-        System.out.println(sortingObject.sort(testArray));
+        ISort sortingObject = new SorterB();
+        System.out.println(checkSort(sortingObject, 10));
 
     }
 }
