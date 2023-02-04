@@ -111,12 +111,27 @@ public class SortingTester {
 
 
     public static void main(String[] args) {
-        // A: Merge
-        // B: Quick
-        // C: Insert/Bubble
+        // A: Merge --- 
+        // B: Quick ---
+        // C: Insert --- 
         // D: Selection?
         // E: Dr Evil
-        // F: Insert/Bubble
+        // F: Bubble ---
+
+
+        // Not Stable
+        // QS (nlogn)
+        // SS (n^2)
+
+        // Stable
+        // Insertion (2n) for oneoff
+        // Bubble (n^2) for oneoff
+        // Merge (nlogn) for all cases
+
+        // Dr Evil?
+
+
+
 
         // Selection has to be D
 
