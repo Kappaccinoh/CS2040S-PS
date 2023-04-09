@@ -281,30 +281,147 @@ public class MazeSolver implements IMazeSolver {
 				break;
 		}
 
+		int newValue = 0;
+
 		if (val == EMPTY_SPACE) {
 			val = 1;
+			newValue = scarinessLevel[t.x][t.y] + val;
+		} else {
+			int currentLevel = scarinessLevel[t.x][t.y];
+			if (currentLevel < val) {
+				newValue = val;
+			} else {
+				newValue = currentLevel;
+			}
 		}
 
-		int potentialSum = val;
 		int newRow = t.x + DELTAS[dir][0];
 		int newCol = t.y + DELTAS[dir][1];
+		scarinessLevel[newRow][newCol] = newValue;
 
-		int valueOfNextPoint = scarinessLevel[newRow][newCol];
-
-		if (potentialSum < valueOfNextPoint) {
-			// update
-			scarinessLevel[newRow][newCol] = potentialSum;
-		}
 		// Add room into pQueue
-		Triple nT = new Triple(newRow, newCol, potentialSum);
+		Triple nT = new Triple(newRow, newCol, newValue);
 		this.pQueue.add(nT);
 	}
 
 
 	@Override
 	public Integer bonusSearch(int startRow, int startCol, int endRow, int endCol, int sRow, int sCol) throws Exception {
-		// TODO: Find minimum fear level given new rules and special room.
-		return null;
+		if (this.maze == null) {
+			throw new Exception("Oh no! You cannot call me without initializing the maze!");
+		}
+
+		if (startRow < 0 || startCol < 0 || startRow >= this.maze.getRows() || startCol >= this.maze.getColumns() ||
+				endRow < 0 || endCol < 0 || endRow >= this.maze.getRows() || endCol >= this.maze.getColumns()) {
+			throw new IllegalArgumentException("Invalid start/end coordinate");
+		}
+
+		for (int i = 0; i < this.maze.getRows(); ++i) {
+			for (int j = 0; j < this.maze.getColumns(); ++j) {
+				this.visited[i][j] = false;
+				this.scarinessLevel[i][j] = Integer.MAX_VALUE;
+			}
+		}
+
+		this.endRow = endRow;
+		this.endCol = endCol;
+		this.startRow = startRow;
+		this.startCol = startCol;
+
+		this.pQueue = new PriorityQueue();
+
+		return Dijkstra2(startRow, startCol, sRow, sCol);
+	}
+
+	public Integer Dijkstra2(int startRow, int startCol, int sRow, int sCol) {
+		Triple p = new Triple(startRow, startCol, 0);
+		this.pQueue.add(p);
+		this.visited[p.x][p.y] = true;
+		this.scarinessLevel[p.x][p.y] = 0;
+
+		while (!this.pQueue.isEmpty()) {
+			// Removes the point which has the highest priority
+			Triple curr = this.pQueue.poll();
+			this.visited[curr.x][curr.y] = true;
+			Room currRoom = maze.getRoom(curr.x, curr.y);
+
+			// North
+
+			if (canGo(curr.x, curr.y, 0) && currRoom.getNorthWall() != TRUE_WALL && !this.visited[curr.x - 1][curr.y]) {
+				// Relax
+				relax2(curr, currRoom,0, sRow, sCol);
+			}
+
+			// East
+			if (canGo(curr.x, curr.y, 1) && currRoom.getEastWall() != TRUE_WALL && !this.visited[curr.x][curr.y + 1]) {
+				// Relax
+				relax2(curr, currRoom,1, sRow, sCol);
+			}
+
+			// West
+			if (canGo(curr.x, curr.y, 2) && currRoom.getWestWall() != TRUE_WALL && !this.visited[curr.x][curr.y - 1]) {
+				// Relax
+				relax2(curr, currRoom,2, sRow, sCol);
+			}
+
+			// South
+			if (canGo(curr.x, curr.y, 3) && currRoom.getSouthWall() != TRUE_WALL && !this.visited[curr.x + 1][curr.y]) {
+				// Relax
+				relax2(curr, currRoom,3, sRow, sCol);
+			}
+		}
+		if (scarinessLevel[endRow][endCol] == Integer.MAX_VALUE) {
+			return null;
+		}
+		return scarinessLevel[endRow][endCol];
+	}
+
+	public void relax2(Triple t, Room r, int dir, int sRow, int sCol) {
+
+		int val = 0;
+
+		switch(dir) {
+			case 0:
+				val = r.getNorthWall();
+				break;
+			case 1:
+				val = r.getEastWall();
+				break;
+			case 2:
+				val = r.getWestWall();
+				break;
+			case 3:
+				val = r.getSouthWall();
+				break;
+		}
+
+		int newValue = 0;
+
+		if (val == EMPTY_SPACE) {
+			val = 1;
+			newValue = scarinessLevel[t.x][t.y] + val;
+		} else {
+			int currentLevel = scarinessLevel[t.x][t.y];
+			if (currentLevel < val) {
+				newValue = val;
+			} else {
+				newValue = currentLevel;
+			}
+		}
+
+		int newRow = t.x + DELTAS[dir][0];
+		int newCol = t.y + DELTAS[dir][1];
+		if (newRow == sRow && newCol == sCol) {
+			scarinessLevel[newRow][newCol] = -1;
+			// Add room into pQueue
+			Triple nT = new Triple(newRow, newCol, -1);
+			this.pQueue.add(nT);
+		} else {
+			scarinessLevel[newRow][newCol] = newValue;
+			// Add room into pQueue
+			Triple nT = new Triple(newRow, newCol, newValue);
+			this.pQueue.add(nT);
+		}
 	}
 
 	public static void main(String[] args) {
@@ -313,7 +430,8 @@ public class MazeSolver implements IMazeSolver {
 			IMazeSolver solver = new MazeSolver();
 			solver.initialize(maze);
 
-			System.out.println(solver.pathSearch(0, 0, 0, 4));
+//			System.out.println(solver.pathSearch(0, 0, 0, 4));
+			System.out.println(solver.bonusSearch(0,0,0,3, 0,0));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
